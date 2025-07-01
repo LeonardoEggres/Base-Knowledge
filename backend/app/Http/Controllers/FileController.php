@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class FileController extends Controller
 {
-  public function index(FileService $fileService)
+    public function index(FileService $fileService)
     {
         return $fileService->index();
     }
@@ -21,16 +21,22 @@ class FileController extends Controller
 
     public function store(FilesRequest $request, FileService $fileService)
     {
-        return $fileService->store($request->validate());
+        return $fileService->store($request);
     }
 
     public function update(FilesRequest $request, string $id, FileService $fileService)
     {
-        return  $fileService->update($request->validate(), $id);
+        return  $fileService->update($request->validated(), $id);
     }
 
     public function destroy(string $id, FileService $fileService)
     {
         return $fileService->destroy($id);
     }
+
+    public function getFilesByTopic($topicId, FileService $fileService)
+    {
+        return $fileService->getFilesByTopic($topicId);
+    }
+    
 }

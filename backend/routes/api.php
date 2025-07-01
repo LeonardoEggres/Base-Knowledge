@@ -36,4 +36,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/files', [FileController::class, 'store']);
     Route::put('/files/{id}', [FileController::class, 'update']);
     Route::delete('/files/{id}', [FileController::class, 'destroy']);
+    Route::get('/topics/{topic}/files', [FileController::class, 'getFilesByTopic']);
 });

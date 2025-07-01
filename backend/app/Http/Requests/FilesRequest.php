@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class FilesRequest extends FormRequest
 {
-
     public function authorize(): bool
     {
         return true;
@@ -16,9 +15,8 @@ class FilesRequest extends FormRequest
     {
         return [
             'topic_id' => 'required|exists:topics,id',
-            'file_name' => 'required|string',
-            'file_path' => 'required|string',
-            'file_type' => 'required|string'
+            'files' => 'required|array|min:1',
+            'files.*' => 'file|mimes:pdf,jpg,jpeg,png,gif,webp,doc,docx,txt|max:10240' 
         ];
     }
 
@@ -27,12 +25,12 @@ class FilesRequest extends FormRequest
         return [
             'topic_id.required' => 'O ID do tópico é obrigatório.',
             'topic_id.exists' => 'O tópico informado não existe.',
-            'file_name.required' => 'O nome do arquivo é obrigatório.',
-            'file_name.string' => 'O nome do arquivo deve ser um texto.',
-            'file_path.required' => 'O caminho do arquivo é obrigatório.',
-            'file_path.string' => 'O caminho do arquivo deve ser um texto.',
-            'file_type.required' => 'O tipo do arquivo é obrigatório.',
-            'file_type.string' => 'O tipo do arquivo deve ser um texto.'
+            'files.required' => 'Pelo menos um arquivo é obrigatório.',
+            'files.array' => 'Os arquivos devem ser enviados como array.',
+            'files.min' => 'Pelo menos um arquivo deve ser enviado.',
+            'files.*.file' => 'Cada item deve ser um arquivo válido.',
+            'files.*.mimes' => 'Os arquivos devem ser do tipo: pdf, jpg, jpeg, png, gif, webp, doc, docx, txt.',
+            'files.*.max' => 'Cada arquivo deve ter no máximo 10MB.'
         ];
     }
 }

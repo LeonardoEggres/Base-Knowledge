@@ -6,6 +6,7 @@ use App\Http\Requests\TopicsRequest;
 use App\Models\Topic;
 use App\Services\TopicService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TopicController extends Controller
 {
@@ -21,16 +22,20 @@ class TopicController extends Controller
 
     public function store(TopicsRequest $request, TopicService $topicService)
     {
-        return $topicService->store($request->validate());
+        return $topicService->store($request->validated());
     }
 
     public function update(TopicsRequest $request, string $id, TopicService $topicService)
     {
-        return  $topicService->update($request->validate(), $id);
+        $user = Auth::user();
+
+        return  $topicService->update($request->validated(), $id, $user->id);
     }
 
     public function destroy(string $id, TopicService $topicService)
     {
-        return $topicService->destroy($id);
+        $user = Auth::user();
+
+        return $topicService->destroy($id, $user->id);
     }
 }

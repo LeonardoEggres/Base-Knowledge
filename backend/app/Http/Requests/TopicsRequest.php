@@ -14,10 +14,10 @@ class TopicsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'required|exists:user,id',
+            'user_id' => 'required|exists:users,id',
             'title' => 'required|string',
-            'summary' => 'required|text',
-            'content' => 'required|text',
+            'summary' => 'required|string',
+            'content' => 'required|string',
             'keywords' => 'required|array',
             'keywords.*' => 'string'
         ];
