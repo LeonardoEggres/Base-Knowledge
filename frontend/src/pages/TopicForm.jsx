@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 
+// Componentes UI
+import TopicFormContainer from "../components/ui/TopicFormContainer";
+import FormField from "../components/ui/FormField";
+import FileUploadField from "../components/ui/FileUploadField";
+import ExistingFilesSection from "../components/ui/ExistingFilesSection";
+import FormActions from "../components/ui/FormActions";
+import ErrorMessage from "../components/ui/ErrorMessage";
+import Modal from "../components/ui/Modal";
+
 function TopicForm({ token }) {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -239,247 +248,85 @@ function TopicForm({ token }) {
     );
   };
 
-  const Modal = () => {
-    if (!showModal) return null;
-
-    const getModalStyles = () => {
-      switch (modalType) {
-        case 'success':
-          return {
-            icon: '✅',
-            iconBg: 'bg-green-100',
-            iconColor: 'text-green-600',
-            buttonBg: 'bg-green-600 hover:bg-green-700',
-          };
-        case 'error':
-          return {
-            icon: '❌',
-            iconBg: 'bg-red-100',
-            iconColor: 'text-red-600',
-            buttonBg: 'bg-red-600 hover:bg-red-700',
-          };
-        case 'confirm':
-          return {
-            icon: '❓',
-            iconBg: 'bg-yellow-100',
-            iconColor: 'text-yellow-600',
-            buttonBg: 'bg-blue-600 hover:bg-blue-700',
-          };
-        default:
-          return {
-            icon: 'ℹ️',
-            iconBg: 'bg-blue-100',
-            iconColor: 'text-blue-600',
-            buttonBg: 'bg-blue-600 hover:bg-blue-700',
-          };
-      }
-    };
-
-    const styles = getModalStyles();
-
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform transition-all">
-          <div className="p-6">
-            <div className="flex items-center justify-center mb-4">
-              <div className={`w-16 h-16 rounded-full ${styles.iconBg} flex items-center justify-center`}>
-                <span className={`text-3xl ${styles.iconColor}`}>{styles.icon}</span>
-              </div>
-            </div>
-            
-            <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
-              {modalTitle}
-            </h3>
-            
-            <p className="text-gray-600 text-center mb-6">
-              {modalMessage}
-            </p>
-            
-            <div className="flex gap-3 justify-center">
-              {modalType === 'confirm' ? (
-                <>
-                  <button
-                    onClick={closeModal}
-                    className="px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-xl font-semibold transition duration-200"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={handleModalConfirm}
-                    className={`px-6 py-2 ${styles.buttonBg} text-white rounded-xl font-semibold transition duration-200`}
-                  >
-                    Confirmar
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={closeModal}
-                  className={`px-8 py-2 ${styles.buttonBg} text-white rounded-xl font-semibold transition duration-200`}
-                >
-                  OK
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+  const handleCancel = () => {
+    navigate(isEditing ? `/topics/${id}` : "/");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
-      <div className="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-lg">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          {isEditing ? "Editar Tópico" : "Novo Tópico"}
-        </h2>
+    <TopicFormContainer title={isEditing ? "Editar Tópico" : "Novo Tópico"}>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <FormField
+          label="Título"
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-              Título
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        <FormField
+          label="Resumo"
+          type="textarea"
+          id="summary"
+          value={summary}
+          onChange={(e) => setSummary(e.target.value)}
+          required
+          rows={3}
+        />
 
-          <div>
-            <label htmlFor="summary" className="block text-sm font-medium text-gray-700 mb-1">
-              Resumo
-            </label>
-            <textarea
-              id="summary"
-              value={summary}
-              onChange={(e) => setSummary(e.target.value)}
-              required
-              rows="3"
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
-            ></textarea>
-          </div>
+        <FormField
+          label="Conteúdo Completo"
+          type="textarea"
+          id="content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          required
+          rows={8}
+        />
 
-          <div>
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-1">
-              Conteúdo Completo
-            </label>
-            <textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              required
-              rows="8"
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y"
-            ></textarea>
-          </div>
+        <FormField
+          label="Palavras-chave (separadas por vírgula)"
+          id="keywords"
+          value={keywords}
+          onChange={(e) => setKeywords(e.target.value)}
+          placeholder="Ex: tecnologia, programação, javascript"
+          required
+        />
 
-          <div>
-            <label htmlFor="keywords" className="block text-sm font-medium text-gray-700 mb-1">
-              Palavras-chave (separadas por vírgula)
-            </label>
-            <input
-              type="text"
-              id="keywords"
-              value={keywords}
-              onChange={(e) => setKeywords(e.target.value)}
-              placeholder="Ex: tecnologia, programação, javascript"
-              required
-              className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        {/* Seção de Arquivos Existentes (apenas em modo de edição) */}
+        {isEditing && (
+          <ExistingFilesSection
+            existingFiles={existingFiles}
+            onDeleteFile={handleDeleteExistingFile}
+            loading={loading}
+          />
+        )}
 
-          {/* Seção de Arquivos Existentes (apenas em modo de edição) */}
-          {isEditing && existingFiles.length > 0 && (
-            <div className="border border-gray-200 rounded-xl p-4 bg-gray-50">
-              <h3 className="text-lg font-semibold text-gray-700 mb-3">Arquivos Atuais:</h3>
-              <ul className="space-y-2">
-                {existingFiles.map((file) => (
-                  <li key={file.id} className="flex items-center justify-between bg-white p-2 rounded-lg shadow-sm">
-                    <span className="text-gray-700 text-sm truncate">{file.file_name}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteExistingFile(file.id)}
-                      disabled={loading}
-                      className="ml-4 p-1 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition"
-                      title="Excluir arquivo"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm2 3a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1zm-1 4a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z" clipRule="evenodd" />
-                      </svg>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+        <FileUploadField
+          files={files}
+          onChange={handleFilesChange}
+        />
 
-          <div>
-            <label htmlFor="files" className="block text-sm font-medium text-gray-700 mb-1">
-              Anexar Novos Arquivos (PDF, Imagens, Documentos)
-            </label>
-            <input
-              type="file"
-              id="files"
-              onChange={handleFilesChange}
-              multiple
-              className="w-full text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-            />
-            {files.length > 0 && (
-              <div className="mt-2 text-sm text-gray-600">
-                <p className="font-semibold mb-1">Arquivos selecionados para upload:</p>
-                <ul className="list-disc list-inside">
-                  {files.map((file, index) => (
-                    <li key={index} className="flex items-center gap-2">
-                      <span>📎</span>
-                      <span>{file.name}</span>
-                      <span className="text-gray-400">({(file.size / 1024 / 1024).toFixed(2)} MB)</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+        <ErrorMessage error={error} />
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-100 border border-red-300 text-red-700 rounded-xl">
-              {error}
-            </div>
-          )}
-
-          <div className="flex justify-center gap-4">
-            <button
-              type="submit"
-              disabled={loading}
-              className={`px-8 py-3 rounded-xl shadow-md font-semibold text-lg transition duration-200 ease-in-out ${
-                loading
-                  ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 text-white"
-              }`}
-            >
-              {loading ? (isEditing ? 'Atualizando...' : 'Criando...') : (isEditing ? 'Atualizar Tópico' : 'Criar Tópico')}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate(isEditing ? `/topics/${id}` : "/")}
-              disabled={loading}
-              className={`px-8 py-3 rounded-xl shadow-md font-semibold text-lg transition duration-200 ease-in-out ${
-                loading
-                  ? "bg-gray-400 text-gray-200 cursor-not-allowed"
-                  : "bg-gray-300 hover:bg-gray-400 text-gray-800"
-              }`}
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
-      </div>
+        <FormActions
+          onCancel={handleCancel}
+          loading={loading}
+          isEditing={isEditing}
+        />
+      </form>
 
       {/* Modal Component */}
-      <Modal />
-    </div>
+      <Modal
+        isOpen={showModal}
+        onClose={closeModal}
+        type={modalType}
+        title={modalTitle}
+        message={modalMessage}
+        onConfirm={handleModalConfirm}
+        confirmText="Confirmar"
+        cancelText="Cancelar"
+      />
+    </TopicFormContainer>
   );
 }
 

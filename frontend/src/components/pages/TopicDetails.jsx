@@ -6,10 +6,10 @@ import LoadingSpinner from "../components/ui/LoadingSpinner";
 import ErrorMessage from "../components/ui/ErrorMessage";
 import Modal from "../components/ui/Modal";
 import ImageModal from "../components/ui/ImageModal";
-import KeywordsSection from "../components/topic/KeywordsSection";
-import TopicContent from "../components/topic/TopicContent";
-import FilesSection from "../components/topic/FilesSection";
-import TopicActions from "../components/topic/TopicActions";
+import KeywordsSection from "./KeywordsSection";
+import TopicContent from "./TopicContent";
+import FilesSection from "./FilesSection";
+import TopicActions from "./TopicActions";
 
 function TopicDetails({ token, loggedInUserId }) {
   const { id } = useParams();
